@@ -1,13 +1,10 @@
 <template>
   <v-ons-splitter>
-    <v-ons-splitter-side
-      swipeable width="150px" collapse="" side="left"
-      :open.sync="openSide"
-    >
+    <v-ons-splitter-side swipeable width="150px" collapse="" side="right" :open.sync="openSide">
       <v-ons-page>
         <v-ons-list>
           <v-ons-list-header>Menu</v-ons-list-header>
-          <v-ons-list-item v-for="page in pages" :key="page" tappable modifier="chevron" @click="currentPage = page; openSide = false">
+          <v-ons-list-item v-for="page in pages" :key="page" tappable modifier="chevron" @click="pageStack = [page]; openSide = false">
             <div class="center">{{ page }}</div>
           </v-ons-list-item>
         </v-ons-list>
@@ -16,9 +13,8 @@
 
     <v-ons-splitter-content>
       <v-ons-navigator :page-stack="pageStack">
-        <component v-for="page in pageStack" :is="page" :key="page" @push="pageStack.push($event)"></component>
-      </v-ons-navigator>
-      <div :is="currentPage" :toggle-menu="() => openSide = !openSide"></div>
+        <component :is="page" v-for="page in pageStack" @push-page="pageStack.push($event)" :toggle-menu="() => openSide = !openSide"></component>
+      </v-ons-navigator>      
     </v-ons-splitter-content>
   </v-ons-splitter>
 </template>
@@ -30,10 +26,9 @@
   import settings from './components/settingsPage'
   export default {
     data() {
-      return {
-        currentPage: 'home',
+      return {        
         pages: ['home', 'news', 'settings'],
-        pageStack: ['home'],
+        pageStack: [home],
         openSide: false
       };
     },    
