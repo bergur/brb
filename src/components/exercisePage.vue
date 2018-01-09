@@ -1,7 +1,10 @@
 <template>
     <v-ons-page>
       <custom-toolbar :title="'Æfing 1'" :backLabel="'FRÍTT'" :action="toggleMenu"></custom-toolbar>
-      <countdown startAt="30"></countdown>           
+        <div>
+          <span>{{ workout.exercises[activeWorkout].name }}</span>
+          <countdown :startAt="workout.exercises[activeWorkout].time" @next="next"></countdown>        
+      </div>                        
     </v-ons-page>
     
 </template>
@@ -13,37 +16,38 @@
   export default {
     props: ['toggleMenu'],
     data() {
-      return {                
+      return {
+        activeWorkout: 0, 
         workout: {
           name: 'Æfing 1',
           sets: 2,
           rest: 60,
-          exercises: [{
-            name: 'Háhné',
+          exercises: [{            
+            name: 'Háhné',            
+            reps: undefined,
+            sets: 1,
+            time: 5,
+            rest: 10            
+          },{
+            name: 'Hnébeygjur',            
             reps: undefined,
             sets: 1,
             time: 30,
             rest: 10
           },{
-            name: 'Hnébeygjur',
+            name: 'Burpees',            
             reps: undefined,
             sets: 1,
             time: 30,
             rest: 10
           },{
-            name: 'Burpees',
+            name: 'Framstig',            
             reps: undefined,
             sets: 1,
             time: 30,
             rest: 10
           },{
-            name: 'Framstig',
-            reps: undefined,
-            sets: 1,
-            time: 30,
-            rest: 10
-          },{
-            name: 'Gangandi armbegyjur',
+            name: 'Gangandi armbegyjur',            
             reps: undefined,
             sets: 1,
             time: 30,
@@ -52,7 +56,10 @@
         }
       };
     },     
-    methods: {      
+    methods: {  
+      next(val) {
+        this.activeWorkout += 1;        
+      },
       push() {
         this.$emit('push-page', exercise);
       }      
