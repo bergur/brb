@@ -1,13 +1,20 @@
 re<template> 
-      <div>   
-        <div style="text-align:center">                
-          <img :src="numbers[0]" />
-          <img :src="numbers[1]" />
-          <img src="../images/figure-colon.png" />
-          <img :src="numbers[2]" />
-          <img :src="numbers[3]" />
-        </div>        
-        <v-ons-button modifier="large" @click="() => on ? stop() : start()" style="margin: 6px 0">{{ on ? 'Stopp' : 'Byrja' }}</v-ons-button>      
+      <div>           
+          <div style="text-align:center">                
+            <img :src="numbers[0]" />
+            <img :src="numbers[1]" />
+            <img src="../images/figure-colon.png" />
+            <img :src="numbers[0]" />
+            <img :src="numbers[1]" />
+            <img src="../images/figure-colon.png" />
+            <img :src="numbers[2]" />
+            <img :src="numbers[3]" />
+          </div>        
+          <transition name="fade">
+            <span v-show="show">{{ value }}</span>
+          </transition>
+          <v-ons-button modifier="large" @click="() => running ? stop() : start()" style="margin: 6px 0">{{ running ? 'Stopp' : 'Byrja' }}</v-ons-button>      
+        
     </div>   
 </template>
 
@@ -28,36 +35,53 @@ re<template>
     props: ['startAt'],
     data() {
       return { 
-        on: false,
+        show: true,
+        running: false,
         intervalId: null,
-        value: this.startAt* 1000,
+        value: this.startAt* 100,
         numbers: [figure0,figure1,figure2,figure3,figure4,figure5,figure6,figure7,figure8,figure9]
       };
     }, 
-    computed: {
-      time() {
+    watch: {      
+      startAt(newVal) { 
+        this.show = false;       
+        setTimeout(() => {
+          this.show = true;
+          this.value = newVal * 100;
+          this.start();
+        },1500)
         
-      }      
+        
+      }
     },
     methods: {
       start() {
-        this.on = true  
-        this.value = this.startAt * 1000;      
+        this.running = true                   
         this.intervalId = setInterval(() => {
-          this.value -= 100;
+          this.value -= 1;
           if (this.value === 0) {
+              this.$emit('bergur',true)
               this.stop();
           }
-        },100)
+        },10)
         
       },
       stop() {
-        this.on = false;        
+        this.running = false;         
         clearInterval(this.intervalId);
       },
       clear() {
-          this.value = 0;
+          this.value = this.startAt* 100;
       }      
     }    
   }
 </script>
+<style>
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
+</style>

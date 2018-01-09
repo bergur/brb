@@ -1,7 +1,7 @@
 <template>
     <v-ons-page>
       <custom-toolbar :title="'Æfing 1'" :backLabel="'FRÍTT'" :action="toggleMenu"></custom-toolbar>
-      <countdown startAt="30"></countdown>           
+      <countdown startAt="5" :startAt="workout.exercises[current].time" @bergur="done"></countdown>           
     </v-ons-page>
     
 </template>
@@ -13,7 +13,8 @@
   export default {
     props: ['toggleMenu'],
     data() {
-      return {                
+      return {       
+        current: 0,
         workout: {
           name: 'Æfing 1',
           sets: 2,
@@ -22,13 +23,13 @@
             name: 'Háhné',
             reps: undefined,
             sets: 1,
-            time: 30,
+            time: 15,
             rest: 10
           },{
             name: 'Hnébeygjur',
             reps: undefined,
             sets: 1,
-            time: 30,
+            time: 5,
             rest: 10
           },{
             name: 'Burpees',
@@ -52,7 +53,14 @@
         }
       };
     },     
-    methods: {      
+    methods: {   
+      done() {
+        console.log('jei');
+
+        if (this.current < this.workout.exercises.length) {
+          this.current += 1;
+        }
+      },
       push() {
         this.$emit('push-page', exercise);
       }      
