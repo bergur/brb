@@ -1,10 +1,9 @@
 <template>
     <v-ons-page>
       <custom-toolbar :title="'Æfing 1'" :backLabel="'FRÍTT'" :action="toggleMenu"></custom-toolbar>
-        <div>
-          <span>{{ workout.exercises[activeWorkout].name }}</span>
-          <countdown :startAt="workout.exercises[activeWorkout].time" @next="next"></countdown>        
-      </div>                        
+             
+      <countdown :timer="workout.exercises[current].time" :name="workout.exercises[current].name" @bergur="done"></countdown>                
+      
     </v-ons-page>
     
 </template>
@@ -15,9 +14,9 @@
   import exercise from './exercisePage'
   export default {
     props: ['toggleMenu'],
-    data() {
-      return {
-        activeWorkout: 0, 
+    data() {    
+      return {       
+        current: 0,
         workout: {
           name: 'Æfing 1',
           sets: 2,
@@ -32,7 +31,7 @@
             name: 'Hnébeygjur',            
             reps: undefined,
             sets: 1,
-            time: 30,
+            time: 15,
             rest: 10
           },{
             name: 'Burpees',            
@@ -56,13 +55,13 @@
         }
       };
     },     
-    methods: {  
-      next(val) {
-        this.activeWorkout += 1;        
+    methods: {    
+      done() {        
+          this.current += 1;                  
       },
       push() {
         this.$emit('push-page', exercise);
-      }      
+      }
     },
     components: { customToolbar, countdown }
   }

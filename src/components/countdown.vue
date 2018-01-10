@@ -1,16 +1,19 @@
-re<template> 
-      <div>   
-        <div style="text-align:center">                
-          <img :src="numbers[minutes.ten]" />
-          <img :src="numbers[minutes.unit]" />
-          <img src="../images/figure-colon.png" />
-          <img :src="numbers[seconds.ten]" />
-          <img :src="numbers[seconds.unit]" />
-          <img src="../images/figure-colon.png" />
-          <img :src="numbers[hundreds.ten]" />
-          <img :src="numbers[hundreds.unit]" />          
-        </div>                
-        <v-ons-button modifier="large" @click="() => !running  ? start() : stop()" style="margin: 6px 0">{{  !running ? 'Byrja' : 'Stopp' }}</v-ons-button>      
+<template> 
+      <div>                   
+          <div style="text-align:center">
+            <div style="font-size:48px; text-align:center; margin: 16px 0 32px 0; text-transform: uppercase">{{ name }}</div>                
+            <img :src="numbers[minutes.ten]" />
+            <img :src="numbers[minutes.unit]" />
+            <img src="../images/figure-colon.png" />
+            <img :src="numbers[seconds.ten]" />
+            <img :src="numbers[seconds.unit]" />
+            <img src="../images/figure-colon.png" />
+            <img :src="numbers[hundreds.ten]" />
+            <img :src="numbers[hundreds.unit]" />          
+
+            <v-ons-button modifier="large" @click="() => !running  ? start() : stop()" style="margin: 32px 0 0 0">{{  !running ? 'Byrja' : 'Stopp' }}</v-ons-button>      
+          </div>
+
     </div>   
 </template>
 
@@ -28,16 +31,28 @@ re<template>
   import figure9 from '../images/figure-9.png';
 
   export default {
-    props: ['startAt', 'next'],
+    props: ['timer','name'],
     
     data() {
       return { 
+        show: true,
         running: false,
         intervalId: null,
-        value: this.startAt* 100,
+        value: this.timer* 100,
         numbers: [figure0,figure1,figure2,figure3,figure4,figure5,figure6,figure7,figure8,figure9]
       };
     }, 
+    watch: {      
+      timer(val) {         
+        this.show = false;  
+        this.setValue();
+        this.value = val * 100;      
+        setTimeout(() => {
+          this.show = true;          
+          this.start();
+        },1500)                
+      }
+    },
     computed: {  
       minutes() {
         let minutes = Math.floor(this.value/6000);
@@ -62,15 +77,18 @@ re<template>
           unit: (hundreds >= 10) ? Math.floor(hundreds%10) : hundreds
         }
       }      
-    },
-    methods: {
+    },          
+   
+    methods: {      
       start() {
-        this.running = true;
+        this.value = this.timer* 100,
+        console.log(this.name, this.value);
+        this.running = true                   
         this.intervalId = setInterval(() => {
           this.value -= 1;
-          if (this.value === 0) {                            
-              this.stop();
-              this.$emit('next', 'bergur');
+          if (this.value === 0) {              
+              this.$emit('bergur', true);
+              this.stop();              
           }
         },10)
         
@@ -80,8 +98,18 @@ re<template>
         clearInterval(this.intervalId);
       },
       clear() {
-          this.value = 0;
+          this.value = this.timer* 100;
       }      
     }    
   }
 </script>
+
+<style>
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 0;
+  }
+  
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: .5s;
+  }
+</style>
