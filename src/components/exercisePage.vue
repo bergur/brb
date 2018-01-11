@@ -2,7 +2,11 @@
     <v-ons-page>
       <custom-toolbar :title="'Æfing 1'" :backLabel="'FRÍTT'" :action="toggleMenu"></custom-toolbar>
              
-      <countdown :timer="workout.exercises[current].time" :name="workout.exercises[current].name" @bergur="done"></countdown>                
+      <v-ons-carousel fullscreen swipeable auto-scroll overscrollable :index.sync="carouselIndex" :direction="'vertical'">
+        <v-ons-carousel-item v-for="exercise in workout.exercises" :key="exercise.name">
+          <component :is="countdown" :exercise="exercise" @done="carouselIndex += 1"></component>                
+        </v-ons-carousel-item>
+      </v-ons-carousel>
       
     </v-ons-page>
     
@@ -14,9 +18,11 @@
   import exercise from './exercisePage'
   export default {
     props: ['toggleMenu'],
+
     data() {    
       return {       
-        current: 0,
+        carouselIndex: 0,
+        countdown: countdown,
         workout: {
           name: 'Æfing 1',
           sets: 2,
@@ -55,10 +61,7 @@
         }
       };
     },     
-    methods: {    
-      done() {        
-          this.current += 1;                  
-      },
+    methods: {      
       push() {
         this.$emit('push-page', exercise);
       }

@@ -1,7 +1,7 @@
 <template> 
       <div>                   
           <div style="text-align:center">
-            <div style="font-size:48px; text-align:center; margin: 16px 0 32px 0; text-transform: uppercase">{{ name }}</div>                
+            <div style="font-size:48px; text-align:center; margin: 16px 0 32px 0; text-transform: uppercase">{{ title }}</div>                
             <img :src="numbers[minutes.ten]" />
             <img :src="numbers[minutes.unit]" />
             <img src="../images/figure-colon.png" />
@@ -10,8 +10,8 @@
             <img src="../images/figure-colon.png" />
             <img :src="numbers[hundreds.ten]" />
             <img :src="numbers[hundreds.unit]" />          
-
-            <v-ons-button modifier="large" @click="() => !running  ? start() : stop()" style="margin: 32px 0 0 0">{{  !running ? 'Byrja' : 'Stopp' }}</v-ons-button>      
+          {{ value }}
+            <v-ons-button modifier="large" @click="click" style="margin: 32px 0 0 0">{{  !running ? 'Byrja' : 'Stopp' }}</v-ons-button>      
           </div>
 
     </div>   
@@ -31,28 +31,17 @@
   import figure9 from '../images/figure-9.png';
 
   export default {
-    props: ['timer','name'],
+    props: ['exercise','index'],
     
     data() {
-      return { 
-        show: true,
+      return {         
         running: false,
         intervalId: null,
-        value: this.timer* 100,
+        value: this.exercise.time * 100,
+        title: this.exercise.name,
         numbers: [figure0,figure1,figure2,figure3,figure4,figure5,figure6,figure7,figure8,figure9]
       };
-    }, 
-    watch: {      
-      timer(val) {         
-        this.show = false;  
-        this.setValue();
-        this.value = val * 100;      
-        setTimeout(() => {
-          this.show = true;          
-          this.start();
-        },1500)                
-      }
-    },
+    },     
     computed: {  
       minutes() {
         let minutes = Math.floor(this.value/6000);
@@ -77,36 +66,64 @@
           unit: (hundreds >= 10) ? Math.floor(hundreds%10) : hundreds
         }
       }      
-    },          
-   
-    methods: {      
-      start() {
-        this.value = this.timer* 100,
-        console.log(this.name, this.value);
-        this.running = true                   
-        this.intervalId = setInterval(() => {
-          this.value -= 1;
-          if (this.value === 0) {              
-              this.$emit('bergur', true);
-              this.stop();              
+    },             
+    watch: {
+      index() {        
+        if (this.index) {
+          this.start();
+        }        
+      }
+    },
+    methods: {    
+      click() {
+        if (this.running) {
+          this.stop();
+        }
+        else {        
+          if (this.title === 'HVÍLD') {
+            this.rest();
           }
-        },10)
-        
+          else {
+            this.start();
+          }
+        }
+      },
+      countdown(cb) {     
+          this.running = true;        
+          this.intervalId = setInterval(() => {
+            this.value -= 1;
+            if (this.value === 0) {                                                    
+              this.stop();
+              cb();
+            }
+          },10)          
+      },    
+      start() {                      
+        this.title = this.exercise.name;  
+        this.value = this.exercise.time * 100
+        this.countdown(this.rest);                    
+      },
+      rest() {           
+        this.resting = true;     
+        this.title = 'HVÍLD';
+        this.value = this.exercise.rest * 100;
+        setTimeout(() => {
+          this.countdown(()  => {            
+            this.$emit('done');
+          });
+        },1500);
       },
       stop() {
-        this.running = false;
+        this.running = false;        
         clearInterval(this.intervalId);
-      },
-      clear() {
-          this.value = this.timer* 100;
-      }      
+      }         
     }    
   }
 </script>
 
 <style>
   .fade-enter-active, .fade-leave-active {
-    transition: opacity 0;
+    transition: opacity 0;  
   }
   
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
