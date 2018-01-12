@@ -1,16 +1,15 @@
 <template> 
-      <div>                   
+      <div>     
           <div style="text-align:center">
             <div style="font-size:48px; text-align:center; margin: 16px 0 32px 0; text-transform: uppercase">{{ title }}</div>                
-            <img :src="numbers[minutes.ten]" />
-            <img :src="numbers[minutes.unit]" />
-            <img src="../images/figure-colon.png" />
-            <img :src="numbers[seconds.ten]" />
-            <img :src="numbers[seconds.unit]" />
-            <img src="../images/figure-colon.png" />
-            <img :src="numbers[hundreds.ten]" />
-            <img :src="numbers[hundreds.unit]" />          
-          {{ value }}
+            <img :src="numbers[minutes.ten]" width="50" height="75" />
+            <img :src="numbers[minutes.unit]" width="50" height="75" />
+            <img src="../images/figure-colon.png" width="25" height="75" />
+            <img :src="numbers[seconds.ten]" width="50" height="75" />
+            <img :src="numbers[seconds.unit]" width="50" height="75" />
+            <img src="../images/figure-colon.png" width="25" height="75" />
+            <img :src="numbers[hundreds.ten]" width="50" height="75" />
+            <img :src="numbers[hundreds.unit]" width="50" height="75" />  
             <v-ons-button modifier="large" @click="click" style="margin: 32px 0 0 0">{{  !running ? 'Byrja' : 'Stopp' }}</v-ons-button>      
           </div>
 
@@ -31,17 +30,19 @@
   import figure9 from '../images/figure-9.png';
 
   export default {
-    props: ['exercise','index'],
-    
+    props: {
+      exercise: Object,      
+      finished: Boolean
+    },
     data() {
       return {         
-        running: false,
+        running: false,        
         intervalId: null,
         value: this.exercise.time * 100,
         title: this.exercise.name,
         numbers: [figure0,figure1,figure2,figure3,figure4,figure5,figure6,figure7,figure8,figure9]
       };
-    },     
+    },        
     computed: {  
       minutes() {
         let minutes = Math.floor(this.value/6000);
@@ -66,52 +67,49 @@
           unit: (hundreds >= 10) ? Math.floor(hundreds%10) : hundreds
         }
       }      
-    },             
-    watch: {
-      index() {        
-        if (this.index) {
-          this.start();
-        }        
-      }
-    },
-    methods: {    
+    },          
+    methods: {   
       click() {
         if (this.running) {
           this.stop();
         }
         else {        
-          if (this.title === 'HVÍLD') {
-            this.rest();
-          }
-          else {
-            this.start();
-          }
+          this.startExercise();
         }
       },
-      countdown(cb) {     
+      countdown(cb) {   
+        setTimeout(() => {       
           this.running = true;        
           this.intervalId = setInterval(() => {
-            this.value -= 1;
+            this.value -= 1;            
             if (this.value === 0) {                                                    
-              this.stop();
+              this.stop();               
               cb();
             }
-          },10)          
+          },10)                  
+        },1000);
       },    
-      start() {                      
+      startExercise() {                 
         this.title = this.exercise.name;  
-        this.value = this.exercise.time * 100
-        this.countdown(this.rest);                    
+        this.value = this.exercise.time * 100                                 
+        this.countdown(() => {          
+          setTimeout(this.startRest,500)
+        });
       },
-      rest() {           
+      startRest() {           
         this.resting = true;     
         this.title = 'HVÍLD';
-        this.value = this.exercise.rest * 100;
-        setTimeout(() => {
-          this.countdown(()  => {            
-            this.$emit('done');
-          });
-        },1500);
+        this.value = this.exercise.rest * 100;        
+        this.countdown(()  => {              
+          this.$emit('done');                       
+
+          setTimeout(() => {
+            if (!this.finished) {
+              this.startExercise();
+            }          
+          },500)
+          
+        });                        
       },
       stop() {
         this.running = false;        
