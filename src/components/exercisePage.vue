@@ -1,7 +1,7 @@
 <template>
     <v-ons-page>
       <custom-toolbar :title="'Æfing 1'" :backLabel="'FRÍTT'" :action="toggleMenu"></custom-toolbar>      
-      <component :is="countdown" :exercise="workout.exercises[index]" :total="total"  @done="next" ></component>                              
+      <component :is="countdown" :exercise="workout.exercises[index]" :total="total"  @next="next" @finished="$ons.notification.alert({title: 'Æfingu lokið', message: 'Vel gert þú!'});" ></component>                              
             
     </v-ons-page>
     
@@ -15,8 +15,7 @@
     data() {    
       return {       
         index: 0,        
-        countdown: countdown,
-        finished: false,
+        countdown: countdown,        
         workout: {
           name: 'Æfing 1',
           sets: 2,
@@ -65,7 +64,7 @@
         else {
           this.finished=true;
         }
-      }
+      }      
     },
     components: { customToolbar, countdown }
   }

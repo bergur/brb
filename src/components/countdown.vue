@@ -110,11 +110,14 @@
         this.title = 'HVÍLD';
         this.value = this.exercise.rest * 100;        
         this.countdown(()  => {              
-          this.$emit('done');                       
+          this.$emit('next');                       
           
-          if (this.progress !== 100) {
+          if (this.progress !== 100) {            
             setTimeout(this.startExercise,500);             
           }          
+          else {
+            this.$emit('finished');
+          }
         });                        
       },
       stop() {
