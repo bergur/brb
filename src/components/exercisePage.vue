@@ -1,15 +1,8 @@
 <template>
     <v-ons-page>
-      <custom-toolbar :title="'Æfing 1'" :backLabel="'FRÍTT'" :action="toggleMenu"></custom-toolbar>
-
-      <component :is="countdown" :exercise="workout.exercises[index]" :finished="finished"  @done="next" ></component>                              
-      
-      <div style="width:100%; text-align:center; margin-top:20px">
-        <span v-for="(exercise,i) in workout.exercises" :key="exercise.name">
-          <span :style="{ width: Math.floor(exercise.time/total*100) + '%', backgroundColor: i == index ? 'red' : 'blue' }" style="display:block; color:#fff; float:left;">&nbsp;</span>
-          <span :style="{ width: Math.floor(exercise.rest/total*100) + '%', backgroundColor: i == index ? 'red' : 'grey' }" style="display:block; color:#000; float:left;">&nbsp;</span>
-        </span>
-      </div>
+      <custom-toolbar :title="'Æfing 1'" :backLabel="'FRÍTT'" :action="toggleMenu"></custom-toolbar>      
+      <component :is="countdown" :exercise="workout.exercises[index]" :total="total"  @done="next" ></component>                              
+            
     </v-ons-page>
     
 </template>

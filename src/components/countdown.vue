@@ -1,7 +1,8 @@
 <template> 
       <div>     
+          <v-ons-progress-bar :value="progress"></v-ons-progress-bar>      
           <div style="text-align:center">
-            <div style="font-size:48px; text-align:center; margin: 16px 0 32px 0; text-transform: uppercase">{{ title }}</div>                
+            <div style="font-size:48px; text-align:center; margin: 16px 0 16px 0; text-transform: uppercase">{{ title }}</div>                
             <img :src="numbers[minutes.ten]" width="50" height="75" />
             <img :src="numbers[minutes.unit]" width="50" height="75" />
             <img src="../images/figure-colon.png" width="25" height="75" />
@@ -10,7 +11,8 @@
             <img src="../images/figure-colon.png" width="25" height="75" />
             <img :src="numbers[hundreds.ten]" width="50" height="75" />
             <img :src="numbers[hundreds.unit]" width="50" height="75" />  
-            <v-ons-button modifier="large" @click="click" style="margin: 32px 0 0 0">{{  !running ? 'Byrja' : 'Stopp' }}</v-ons-button>      
+            
+            <v-ons-button modifier="large" @click="click" style="margin-top: 16px">{{  !running ? 'Byrja' : 'Stopp' }}</v-ons-button>      
           </div>
 
     </div>   
@@ -32,18 +34,23 @@
   export default {
     props: {
       exercise: Object,      
-      finished: Boolean
+      total: Number
     },
     data() {
-      return {         
-        running: false,        
+      return {       
+        sum: 0,                  
+        running: false,                
         intervalId: null,
         value: this.exercise.time * 100,
         title: this.exercise.name,
         numbers: [figure0,figure1,figure2,figure3,figure4,figure5,figure6,figure7,figure8,figure9]
       };
     },        
-    computed: {  
+    computed: {
+      progress() {
+        console.log(this.sum);
+        return Math.floor(this.sum/this.total);
+      },
       minutes() {
         let minutes = Math.floor(this.value/6000);
         return {
@@ -81,6 +88,8 @@
         setTimeout(() => {       
           this.running = true;        
           this.intervalId = setInterval(() => {
+            this.sum += 1;
+            console.log(this.sum);
             this.value -= 1;            
             if (this.value === 0) {                                                    
               this.stop();               
@@ -102,13 +111,10 @@
         this.value = this.exercise.rest * 100;        
         this.countdown(()  => {              
           this.$emit('done');                       
-
-          setTimeout(() => {
-            if (!this.finished) {
-              this.startExercise();
-            }          
-          },500)
           
+          if (this.progress !== 100) {
+            setTimeout(this.startExercise,500);             
+          }          
         });                        
       },
       stop() {
